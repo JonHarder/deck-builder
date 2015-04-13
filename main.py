@@ -1,3 +1,5 @@
+from random import shuffle
+
 class Card(object):
     """The (base?) class for all cards."""
     def __init__(self):
@@ -88,6 +90,29 @@ class Chapel(Card):
         self.name = "Chapel"
         self.flavor = "Trash up to 4 cards from your hand."
 
+
+class Player(object):
+    def __init__(self):
+        self.discard = []
+        self.hand = []
+        self.draw = []
+        for _ in range(7):
+            self.draw.append(Copper())
+        for _ in range(3):
+            self.draw.append(Estate())
+        shuffle(self.draw)
+
+    def draw_cards(self, num_cards):
+        # need to handle empty draw deck with discard
+        for _ in range(num_cards):
+            card = self.draw.pop()
+            self.hand.append(card)
+
+    def __repr__(self):
+        return str(self.hand)
+
 if __name__ == "__main__":
-    card = Chapel()
-    print card.description()
+    me = Player()
+    print me
+    me.draw_cards(5)
+    print me
