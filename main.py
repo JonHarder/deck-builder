@@ -1,7 +1,7 @@
 from random import shuffle
 
 class Card(object):
-    """The (base?) class for all cards."""
+    """The base class for all cards."""
     def __init__(self):
         self.name = "Default Card"
         self.cost = 0
@@ -128,6 +128,16 @@ class Village(Card):
         players[0].draw_cards(1)
         players[0].actions += 2
 
+class Woodcutter(Card):
+    def __init__(self):
+        super(Woodcutter, self).__init__()
+        self.cost = 3
+        self.name = "Woodcutter"
+        self.flavor = "+1 Buy\n+2 coins"
+
+    def effect(self, kingdom, players):
+        players[0].buys += 1
+        players[0].coins += 2
 
 class Player(object):
     def __init__(self):
@@ -161,11 +171,20 @@ class Player(object):
             card = self.draw.pop()
             self.hand.append(card)
 
+    def show_hand(self):
+        hand_str = ""
+        for idx, card in enumerate(self.hand):
+            hand_str += str(idx) + ":"+str(card)
+            if idx != len(self.hand)-1:
+                hand_str += ", "
+        return hand_str
+
+
     def __repr__(self):
         return "Actions: {0}\nBuys: {1}\nCoins: {2}\n".format(self.actions,
                                                               self.buys,
                                                               self.coins) \
-                + "Hand: " + str(self.hand) + "\nDiscard: " + str(self.discard)
+                + "Hand: " + self.show_hand()
 
 class Kingdom():
     # cards : dict<string, Card>
@@ -176,8 +195,8 @@ class Kingdom():
     victoryList = victoryDict.keys()
     actionDict = {"chapel":Chapel(), "cellar":Cellar(),
                   "moat":Moat(), "chancellor":Chancellor(),
-                  "village":Village(),
-                  # "woodcutter":Woodcutter(), "workshop":Workshop(),
+                  "village":Village(), "woodcutter":Woodcutter(),
+                  # "workshop":Workshop(),
                   # "bereaucrat":Bereaucrat(), "feast":Feast(), "gardens":Gardens(),
                   # "militia":Militia(), "moneylender":Moneylender(),
                   # "remodel":Remodel(), "smithy":Smithy(), "spy":Spy(),
@@ -235,12 +254,55 @@ class Kingdom():
         player.coins -= card_cost
         return True
 
+    # gain : Player -> Card -> Bool
+    def gain(self, player, card):
+        """gives the player the specific card from the kingdom,
+        this is different from buying in that the player does not need
+        buys or coins to aquire this card, nor will the players buys nor
+        coins be affected by this act
+
+        if card is in stock, the card will be gained and returns True
+        if not, nothing will happend and return False"""
+        if not self.kingdom[card]:
+            return False
+        gained_card = self.kingdom[card].pop()
+        player.discard.append(gained_card)
+        return True
+
+    def __repr__(self):
+        names = ""
+        num_printed = 0
+        for (name, stack) in self.kingdom.iteritems():
+            num_printed += 1
+            names += name + ": " + str(len(stack)) + ". "
+            if num_printed == 5:
+                num_printed = 0
+                names += "\n"
+        return names
+
+# something : [Player] -> Kingdom -> [Card] -> Bool
+def something(players, kingdom, table):
+    # determine if card is action, treasure, or otherwise
+    print kingdom
+    print "======================================"
+    print table
+    print "======================================"
+    print players[0]
+    try:
+        selection = int(raw_input("Play a card: "))
+        card = players[0].hand.pop(selection)
+        table.append(card)
+        card.effect(kingdom, players)
+    except ValueError:
+        print "Invalid response. Enter a number listed next to the desired card."
+        something(players, kingdom, table)
+
 if __name__ == "__main__":
-    me = Player()
-    players = [me]
-    players[0].coins = 5
-    players[0].buys = 2
-    print players[0]
+    table = [] # list of cards played
     k = Kingdom()
-    k.buy(players[0], "chapel")
-    print players[0]
+    me = Player()
+    you = Player()
+    me.draw_cards(5)
+    players = [me,you]
+    something(players,k,table)
+    something(players,k,table)
