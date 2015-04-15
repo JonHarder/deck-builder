@@ -45,6 +45,12 @@ class Kingdom():
         self.kingdom.update({"dutchy":[Dutchy()]*8})
         self.kingdom.update({"province":[Province()]*8})
 
+
+    # purchase : IO Card
+    def purchase(self):
+        selection = raw_input("Enter card name:")
+        return Kingdom.kingdomDict[selection]
+
     # buy : Card -> Player -> Bool
     def buy(self, player, card):
         """takes a player and a card that player wishes to buy,
@@ -90,8 +96,8 @@ class Kingdom():
         num_printed = 0
         for (name, stack) in self.kingdom.iteritems():
             num_printed += 1
-            names += name + ": " + str(len(stack)) + ". "
-            if num_printed == 5:
+            names += name + ": " + str(len(stack)) + " left\t"
+            if num_printed == 3:
                 num_printed = 0
                 names += "\n"
         return names

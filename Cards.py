@@ -22,7 +22,7 @@ class Card(object):
 class Copper(Card):
     def __init__(self):
         super(Copper, self).__init__()
-        self.name = "Copper"
+        self.name = "copper"
         self.flavor = "worth 1 coin"
 
     def effect(self, kingdom, players):
@@ -31,7 +31,7 @@ class Copper(Card):
 class Silver(Card):
     def __init__(self):
         super(Silver, self).__init__()
-        self.name = "Silver"
+        self.name = "silver"
         self.cost = 3
         self.flavor = "Worth 2 coins"
 
@@ -41,7 +41,7 @@ class Silver(Card):
 class Gold(Card):
     def __init__(self):
         super(Gold, self).__init__()
-        self.name = "Gold"
+        self.name = "gold"
         self.cost = 6
         self.flavor = "Worth 3 coins"
 
@@ -51,7 +51,7 @@ class Gold(Card):
 class Estate(Card):
     def __init__(self):
         super(Estate, self).__init__()
-        self.name = "Estate"
+        self.name = "estate"
         self.cost = 2
         self.victory_points = 1
         self.flavor = "Worth 1 victory point"
@@ -59,7 +59,7 @@ class Estate(Card):
 class Dutchy(Card):
     def __init__(self):
         super(Dutchy, self).__init__()
-        self.name = "Dutchy"
+        self.name = "dutchy"
         self.cost = 5
         self.victory_points = 3
         self.flavor = "Worth 3 victory points"
@@ -67,7 +67,7 @@ class Dutchy(Card):
 class Province(Card):
     def __init__(self):
         super(Province, self).__init__()
-        self.name = "Province"
+        self.name = "province"
         self.cost = 8
         self.victory_points = 6
         self.flavor = "Worth 6 victory points"
@@ -75,14 +75,14 @@ class Province(Card):
 class Curse(Card):
     def __init__(self):
         super(Curse, self).__init__()
-        self.name = "Curse"
+        self.name = "curse"
         self.victory_points = -1
         self.flavor = "Worth -1 victory points"
 
 class Cellar(Card):
     def __init__(self):
         super(Cellar, self).__init__()
-        self.name = "Cellar"
+        self.name = "cellar"
         self.cost = 2
         self.flavor = "Discard any number of cards.\n+1 Card per card discarded"
 
@@ -95,23 +95,26 @@ class Chapel(Card):
     def __init__(self):
         super(Chapel, self).__init__()
         self.cost = 2
-        self.name = "Chapel"
+        self.name = "chapel"
         self.flavor = "Trash up to 4 cards from your hand."
 
 class Moat(Card):
-    def __init(self):
+    def __init__(self):
         super(Moat, self).__init__()
         self.cost = 2
-        self.name = "Moat"
+        self.name = "moat"
         self.flavor = "+2 Cards\nWhen another player plays an attack\n\
 card, you may reveal this from your\nhand. If you do, you are\
 unaffected\nby that Attack."
+
+    def effect(self, kingdom, players):
+        players[0].draw_cards(2)
 
 class Chancellor(Card):
     def __init__(self):
         super(Chancellor, self).__init__()
         self.cost = 3
-        self.name = "Chancellor"
+        self.name = "chancellor"
         self.flavor = "You may immediately put your deck into your\n\
 discard pile."
 
@@ -119,7 +122,7 @@ class Village(Card):
     def __init__(self):
         super(Village, self).__init__()
         self.cost = 3
-        self.name = "Village"
+        self.name = "village"
         self.flavor = "+1 Card\n+2 Actions"
 
     def effect(self, kingdom, players):
@@ -130,7 +133,7 @@ class Woodcutter(Card):
     def __init__(self):
         super(Woodcutter, self).__init__()
         self.cost = 3
-        self.name = "Woodcutter"
+        self.name = "woodcutter"
         self.flavor = "+1 Buy\n+2 coins"
 
     def effect(self, kingdom, players):

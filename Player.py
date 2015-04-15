@@ -1,4 +1,5 @@
 from random import shuffle
+from Kingdom import Kingdom
 from Cards import *
 
 class Player(object):
@@ -41,6 +42,27 @@ class Player(object):
                 hand_str += ", "
         return hand_str
 
+    def start_turn(self):
+        self.actions = 1
+        self.buys = 1
+        self.coins = 0
+        self.draw_cards(5)
+
+    def end_turn(self, table):
+        """takes the table : [Card], discards cards on
+        table as well as any remaining cards in hand into
+        player's discard pile"""
+        self.discard += table
+        table = []
+        self.discard += self.hand
+        self.hand = []
+
+    def action_cards_left(self):
+        num_cards = 0
+        for card in self.hand:
+            if card.name in Kingdom.actionList:
+                num_cards += 1
+        return num_cards
 
     def __repr__(self):
         return "Actions: {0}\nBuys: {1}\nCoins: {2}\n".format(self.actions,
