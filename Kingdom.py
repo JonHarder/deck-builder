@@ -12,7 +12,7 @@ class Kingdom():
     actionDict = {"chapel":Chapel(), "cellar":Cellar(),
                   "moat":Moat(), "chancellor":Chancellor(),
                   "village":Village(), "woodcutter":Woodcutter(),
-                  # "workshop":Workshop(),
+                  "workshop":Workshop(),
                   # "bereaucrat":Bereaucrat(), "feast":Feast(), "gardens":Gardens(),
                   # "militia":Militia(), "moneylender":Moneylender(),
                   # "remodel":Remodel(), "smithy":Smithy(), "spy":Spy(),

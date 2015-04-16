@@ -181,3 +181,33 @@ class Woodcutter(Card):
     def effect(self, kingdom, players):
         players[0].buys += 1
         players[0].coins += 2
+
+class Workshop(Card):
+    def __init__(self):
+        super(Workshop, self).__init__()
+        self.cost = 3
+        self.name = "workshop"
+        self.flavor = "Gain a card costing up to 4"
+
+    def effect(self, kingdom, players):
+        print "Gain a card costing up to 4"
+        answer = raw_input("Enter a card name: ")
+        try:
+            stack = kingdom.kingdom[answer]
+            if stack: # there is at least 1 card left
+                if stack[0].cost <= 4:
+                    print "Gained a {0}", stack[0]
+                    kingdom.gain(players[0], answer)
+                else:
+                    print "This card costs too much, pick a card with cost <= 4"
+                    self.effect(kingdom, players)
+            else:
+                print "There aren't any cards of that type left. pick a different one."
+                self.effect(kingdom, players)
+        except KeyError:
+            print "There aren't any cards in the kingdom with the name {0}".format(answer)
+            self.effect(kingdom, players)
+
+        except KeyError:
+            print "There exists no cards in the kingdom matching the name {0}".format(answer)
+

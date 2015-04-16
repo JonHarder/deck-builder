@@ -62,13 +62,16 @@ def turn(table, kingdom, players, phase="action"):
     if selection[0] == "buy":
         phase = "buy"
         print "------------"
-        result = kingdom.buy(p, selection[1])
-        if not result:
-            print "Could not purchase a {0}".format(selection[1])
-        else:
-            print "Purchased a {0}".format(selection[1])
-        print "------------"
-        raw_input("Hit enter to continue")
+        card = kingdom.kingdomDict[selection[1]]
+        print card.description()
+        if y_or_n("Buy Card?"):
+            result = kingdom.buy(p, selection[1])
+            if not result:
+                print "Could not purchase a {0}".format(selection[1])
+            else:
+                print "Purchased a {0}".format(selection[1])
+            print "------------"
+            raw_input("Hit enter to continue")
         turn(table, kingdom, players, phase)
     elif selection[0] == "play":
         try:
@@ -90,6 +93,16 @@ def turn(table, kingdom, players, phase="action"):
     else:
         print "action '{0}' could not be read as a recognized keyword".format(selection[0])
         turn(table, kingdom, players, phase)
+
+def y_or_n(prompt):
+    answer = raw_input(prompt + " [y/n] ")
+    if answer == "y" or answer == "Y" or answer == "yes":
+        return True
+    elif answer == "n" or answer == "N" or answer == "no":
+        return False
+    else:
+        print "Could not recognize answer, enter y or n"
+        y_or_n(prompt)
 
 if __name__ == "__main__":
     table = [] # list of cards played
