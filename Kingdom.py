@@ -49,9 +49,11 @@ class Kingdom():
     # purchase : IO Card
     def purchase(self):
         selection = raw_input("Enter card name:")
+        if selection == "end":
+            return selection
         return Kingdom.kingdomDict[selection]
 
-    # buy : Card -> Player -> Bool
+    # buy : Player -> Card -> Bool
     def buy(self, player, card):
         """takes a player and a card that player wishes to buy,
         if the card is in stock, and the player has both the buys
@@ -61,9 +63,16 @@ class Kingdom():
         returns True if purchase occurs, False if card isn't in stock
         or player cant buy/afford card"""
         # if theres any cards left of that type
+        try:
+            x = self.kingdom[card]
+        except KeyError:
+            print "You don't have enough coins to buy that."
+            return False
+
         if not self.kingdom[card]:
             return False
         if player.buys < 1:
+            print "You don't have a buy left."
             return False
         card_cost = self.kingdom[card][0].cost
         if player.coins < card_cost:
@@ -96,7 +105,7 @@ class Kingdom():
         num_printed = 0
         for (name, stack) in self.kingdom.iteritems():
             num_printed += 1
-            names += name + ": " + str(len(stack)) + " left\t"
+            names += name + ": " + str(len(stack)) + " left\t\t"
             if num_printed == 3:
                 num_printed = 0
                 names += "\n"

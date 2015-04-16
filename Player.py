@@ -3,10 +3,12 @@ from Kingdom import Kingdom
 from Cards import *
 
 class Player(object):
-    def __init__(self):
+    # __init__ : Int -> Player
+    def __init__(self, player_num):
         self.discard = []
         self.hand = []
         self.draw = []
+        self.player_num = player_num
         self.actions = 0
         self.buys = 0
         self.coins = 0
@@ -15,6 +17,16 @@ class Player(object):
         for _ in range(3):
             self.draw.append(Estate())
         shuffle(self.draw)
+
+    def trash_card_id(self, card_id):
+        if card_id >= 0 and card_id < len(self.hand):
+            self.hand.pop(card_id)
+            # self.discard.append(card)
+
+    def discard_card_id(self, card_id):
+        if card_id >= 0 and card_id < len(self.hand):
+            card = self.hand.pop(card_id)
+            self.discard.append(card)
 
     # move card from hand to discard pile
     def discard_cards(self, num_cards):
@@ -53,7 +65,6 @@ class Player(object):
         table as well as any remaining cards in hand into
         player's discard pile"""
         self.discard += table
-        table = []
         self.discard += self.hand
         self.hand = []
 
@@ -65,8 +76,8 @@ class Player(object):
         return num_cards
 
     def __repr__(self):
-        return "Actions: {0}\nBuys: {1}\nCoins: {2}\n".format(self.actions,
-                                                              self.buys,
-                                                              self.coins) \
-                + "Hand: " + self.show_hand()
+        return "Player: " + str(self.player_num) + "\n" +\
+               "Actions: {0}\nBuys: {1}\nCoins: {2}\n".format(self.actions,\
+                                                               self.buys, self.coins)\
+               + "Hand: " + self.show_hand()
 

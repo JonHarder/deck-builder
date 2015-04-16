@@ -87,9 +87,24 @@ class Cellar(Card):
         self.flavor = "Discard any number of cards.\n+1 Card per card discarded"
 
     def effect(self, kingdom, players):
+        print "Discard any number of cards, draw 1 card each card discarded"
         players[0].actions += 1
-        # discard up to x cards where x is the number of cards in players
-        # hand.  Draw 1 card for each card discarded this way
+        num_discarded = 0
+        while num_discarded < len(players[0].hand):
+            print "Hand:",players[0].show_hand()
+            answer = raw_input("Discarded: {0}, enter card number or end: ".format(num_discarded))
+            if answer == "end":
+                break
+            else:
+                card_id = int(answer)
+                players[0].discard_card_id(card_id)
+                num_discarded += 1
+
+            players[0].draw_cards(num_discarded)
+
+
+            # discard up to x cards where x is the number of cards in players
+            # hand.  Draw 1 card for each card discarded this way
 
 class Chapel(Card):
     def __init__(self):
@@ -97,6 +112,22 @@ class Chapel(Card):
         self.cost = 2
         self.name = "chapel"
         self.flavor = "Trash up to 4 cards from your hand."
+
+    def effect(self, kingdom, players):
+        print "Trash up to 4 cards from your hand."
+        num_trashed = 0
+        while num_trashed < 4:
+            print "Hand:",players[0].show_hand()
+            answer = raw_input("Trashed: {0}, enter card number or end ".format(num_trashed))
+            if answer == "end":
+                return
+            else:
+                try:
+                    card_id = int(answer)
+                    players[0].trash_card_id(card_id)
+                    num_trashed += 1
+                except ValueError:
+                    print "enter card number or end"
 
 class Moat(Card):
     def __init__(self):
@@ -117,6 +148,17 @@ class Chancellor(Card):
         self.name = "chancellor"
         self.flavor = "You may immediately put your deck into your\n\
 discard pile."
+
+    def effect(self, kingdom, players):
+        answer = raw_input("Put entire deck into discard pile? [y/n] ")
+        if answer == "y" or "Y":
+            players[0].discard += players[0].draw
+            players[0].draw = []
+        elif answer == "n" or "N":
+            return
+        else:
+            print "Could not recognize answer, answer y or n"
+            self.effect(kingdom, players)
 
 class Village(Card):
     def __init__(self):

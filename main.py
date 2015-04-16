@@ -5,72 +5,100 @@ from Kingdom import Kingdom
 from Player import Player
 
 # phase = ("action"|"buy")
-# something : [Player] -> Kingdom -> [Card] -> String -> Bool
-def play_card(players, kingdom, table, phase):
+# something : Int -> [Player] -> Kingdom -> String -> Bool
+def play_card(card_id, players, kingdom, phase):
     # determine if card is action, treasure, or otherwise
-    print kingdom
-    print "======================================"
-    print table
-    print "======================================"
-    print players[0]
-    selection = raw_input("Play a card or type end.")
-    try:
-        selection = int(selection)
-        card = players[0].hand[selection]
-        # check to see if its an action card
-        # if so, see if they actually have enough
-        # actions (>= 1) to play it
-        if card.name in Kingdom.victoryList:
-            print "You can't play a victory card."
-            return False
-        if phase == "action" and card.name in Kingdom.actionList:
-            if players[0].actions < 1:
-                print "You dont have enough actions to play an action card"
-                return False
-            else:
-                players[0].actions -= 1
-        if phase != "action" and card.name in Kingdom.actionList:
-            print "The action phase is done, you may not play another action card."
-            return False
-        # remove card from players hand
-        players[0].hand.pop(selection)
-        # put it on the table
-        table.append(card)
-        # play the cards effect
-        card.effect(kingdom, players)
-    except ValueError:
-        if selection == "end":
-            return "end"
-        else:
-            print "Invalid response. Enter a number listed next to the desired card."
-            play_card(players, kingdom, table, phase)
-
-def turn(table, kingdom, players):
     p = players[0]
-    phase = "action"
-    p.start_turn()
-
-    result = ""
-    while result != "end":
-        if p.actions <= 0 or p.action_cards_left() == 0:
-            phase = "buy"
-        if phase == "buy":
-            print kingdom
-            print "======================"
-            print table
-            print "======================"
-            print p
-            print "======================"
-            c = kingdom.purchase()
-            print "Buying {0}".format(c)
+    card = p.hand[card_id]
+    # check to see if its an action card
+    # if so, see if they actually have enough
+    # actions (>= 1) to play it
+    if card.name in Kingdom.victoryList:
+        print "You can't play a victory card."
+        return False
+    if phase == "action" and card.name in Kingdom.actionList:
+        if p.actions == 0:
+            print "You dont have enough actions to play an action card"
+            return False
         else:
-            result = play_card(players, kingdom, table, phase)
+            p.actions -= 1
+    if phase != "action" and card.name in Kingdom.actionList:
+        print "The action phase is done, you may not play another action card."
+        return False
+    # remove card from players hand
+    p.hand.pop(card_id)
+    # put it on the table
+    table.append(card)
+    # play the cards effect
+    card.effect(kingdom, players)
 
-    p.end_turn(table)
-    players = players[1:]+[players[0]]
+def print_world(table, kingdom, players):
+    p = players[0]
+    print kingdom
+    print "======================"
+    print "Table:",table
+    print "======================"
+    print p
+    print "======================"
+
+def turn(table, kingdom, players, phase="action"):
+    p = players[0]
+
+    print_world(table, kingdom, players)
+
+    if p.action_cards_left() == 0 or p.actions == 0:
+        phase = "buy"
+
+    selection = raw_input("[end, inspect card, play #, buy card] ")
+    selection = selection.split(' ')
+    if selection[0] == "inspect":
+        print "------------"
+        try:
+            print kingdom.kingdomDict[selection[1]].description()
+        except KeyError:
+            print "There is no card of name {0} in the kingdom.".format(selection[1])
+        print "------------"
+        raw_input("Hit enter to continue.")
+    if selection[0] == "buy":
+        phase = "buy"
+        print "------------"
+        result = kingdom.buy(p, selection[1])
+        if not result:
+            print "Could not purchase a {0}".format(selection[1])
+        else:
+            print "Purchased a {0}".format(selection[1])
+        print "------------"
+        raw_input("Hit enter to continue")
+        turn(table, kingdom, players, phase)
+    elif selection[0] == "play":
+        try:
+            card_id = int(selection[1])
+            play_card(card_id, players, kingdom, phase)
+        except ValueError:
+            print "-------------"
+            print "Could not read {0} as a number".format(selection[1])
+            print "-------------"
+            raw_input("Hit enter to continue.")
+        except IndexError:
+            print "-------------"
+            print "No card number given. Enter desired card like so: 'play 4'"
+            print "-------------"
+            raw_input("Hit enter to continue.")
+        turn(table, kingdom, players, phase)
+    elif selection[0] == "end":
+        return
+    else:
+        print "action '{0}' could not be read as a recognized keyword".format(selection[0])
+        turn(table, kingdom, players, phase)
 
 if __name__ == "__main__":
     table = [] # list of cards played
     kingdom = Kingdom()
-    players = [Player(), Player()]
-    turn(table, kingdom, players)
+    players = [Player(1), Player(2)]
+    while True:
+        players[0].start_turn()
+        turn(table, kingdom, players)
+        players[0].end_turn(table)
+        table = []
+        p = players.pop(0)
+        players.append(p)
