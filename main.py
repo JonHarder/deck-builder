@@ -104,14 +104,25 @@ def y_or_n(prompt):
         print "Could not recognize answer, enter y or n"
         y_or_n(prompt)
 
+def player_score(player):
+    cards = player.hand + player.discard + player.draw
+    return sum(map(lambda card: card.victory_points, cards))
+
+# winner : [Player] -> Player
+def winner(players):
+    return max(players, key=player_score)
+
+
 if __name__ == "__main__":
     table = [] # list of cards played
     kingdom = Kingdom()
     players = [Player(1), Player(2)]
-    while True:
+    while not kingdom.is_game_over():
         players[0].start_turn()
         turn(table, kingdom, players)
         players[0].end_turn(table)
         table = []
         p = players.pop(0)
         players.append(p)
+    winning_player = winner(players)
+    print "Game over, player {0} wins!".format(winning_player.player_num)

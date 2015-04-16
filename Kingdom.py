@@ -45,6 +45,18 @@ class Kingdom():
         self.kingdom.update({"dutchy":[Dutchy()]*8})
         self.kingdom.update({"province":[Province()]*8})
 
+    def is_game_over(self):
+        if not self.kingdom["province"]:
+            return True
+        cards = self.kingdom.keys()
+        num_empty_piles = 0
+        for card in cards:
+            if not self.kingdom[card]:
+                num_empty_piles += 1
+        if num_empty_piles >= 3:
+            return True
+
+        return False
 
     # purchase : IO Card
     def purchase(self):
