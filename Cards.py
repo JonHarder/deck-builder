@@ -90,21 +90,20 @@ class Cellar(Card):
         print "Discard any number of cards, draw 1 card each card discarded"
         players[0].actions += 1
         num_discarded = 0
-        while num_discarded < len(players[0].hand):
+        hand_size = len(players[0].hand)
+        while num_discarded < hand_size:
             print "Hand:",players[0].show_hand()
             answer = raw_input("Discarded: {0}, enter card number or end: ".format(num_discarded))
             if answer == "end":
                 break
             else:
                 card_id = int(answer)
-                players[0].discard_card_id(card_id)
+                card = players[0].hand.pop(card_id)
+                players[0].discard.append(card)
+                # players[0].discard_card_id(card_id)
                 num_discarded += 1
 
-            players[0].draw_cards(num_discarded)
-
-
-            # discard up to x cards where x is the number of cards in players
-            # hand.  Draw 1 card for each card discarded this way
+        players[0].draw_cards(num_discarded)
 
 class Chapel(Card):
     def __init__(self):
@@ -191,23 +190,96 @@ class Workshop(Card):
 
     def effect(self, kingdom, players):
         print "Gain a card costing up to 4"
-        answer = raw_input("Enter a card name: ")
-        try:
-            stack = kingdom.kingdom[answer]
-            if stack: # there is at least 1 card left
-                if stack[0].cost <= 4:
-                    print "Gained a {0}", stack[0]
-                    kingdom.gain(players[0], answer)
-                else:
-                    print "This card costs too much, pick a card with cost <= 4"
-                    self.effect(kingdom, players)
-            else:
-                print "There aren't any cards of that type left. pick a different one."
-                self.effect(kingdom, players)
-        except KeyError:
-            print "There aren't any cards in the kingdom with the name {0}".format(answer)
-            self.effect(kingdom, players)
+        kingdom.gain(players[0], 4)
 
-        except KeyError:
-            print "There exists no cards in the kingdom matching the name {0}".format(answer)
+class Bureaucrat(Card):
+    def __init__(self):
+        super(Bureaucrat, self).__init__()
+        self.cost = 4
+        self.name = "bureaucrat"
+        self.flavor = "Gain a silver card;\nput it on top of your deck,\neach other player\
+ reveals a victory card\nfrom his hand and puts it on his deck\n(or reveals a hand with no\
+ victory cards)."
 
+    def effect(self, kingdom, players):
+        kingdom.gain_card(players[0], "silver")
+        #TODO: add the other player effects
+
+
+class Feast(Card):
+    def __init__(self):
+        super(Feast, self).__init__()
+        self.cost = 4
+        self.name = "feast"
+        self.flavor = "Trashi this card.\nGain a card costing up to 5"
+
+    def effect(self, kingdom, players):
+        kingdom.gain(players[0], 5)
+
+class Gardens(Card):
+    def __init__(self):
+        super(Gardens, self).__init__()
+        self.cost = 4
+        self.name = "gardens"
+        self.flavor = "Worth 1 victory point\nfor every 10 cards\nin your deck (rounded down)"
+
+class Militia(Card):
+    def __init__(self):
+        super(Militia, self).__init__()
+        self.cost = 4
+        self.name = "militia"
+        self.flavor = "+2 coins\nEach other player discards\ndown to 3 cards in his hand"
+
+    def effect(self, kingdom, players):
+        players[0].coins += 2
+        for player in players[1:]:
+            print "Player {0}, discard down to three cards.".format(player.player_num)
+
+
+class Moneylender(Card):
+    def __init__(self):
+        super(Moneylender, self).__init__()
+        self.cost = 4
+        self.name = "moneylender"
+        self.flavor = "Trash a Copper card from your hand.\nIf you do, +3 coins"
+
+    def effect(self, kingdom, players):
+        for idx, card in enumerate(players[0].hand):
+            if card.name == "copper":
+                players[0].trash_card_id(idx)
+                players[0].coins += 3
+                break
+
+class Remodel(Card):
+    def __init__(self):
+        super(Remodel, self).__init__()
+        self.cost = 4
+        self.name = "remodel"
+        self.flavor = "Trash a card from your hand.\nGain a card costing up to 2 more\n\
+than the trashed card."
+
+    def effect(self, kingdom, players):
+        print "Hand:", players[0].show_hand()
+        card_id = int(raw_input("Enter a card number to trash: "))
+        card = players[0].hand.pop(card_id)
+        print "Trashing a/n", card
+        max_cost = card.cost + 2
+        kingdom.gain(players[0], max_cost)
+
+class Smithy(Card):
+    def __init__(self):
+        super(Smithy, self).__init__()
+        self.cost = 4
+        self.name = "smithy"
+        self.flavor = "+3 cards."
+
+    def effect(self, kingdom, players):
+        players[0].draw_cards(3)
+
+class Spy(Card):
+    def __init__(self):
+        super(Spy, self).__init__()
+        self.cost = 4
+        self.name = "spy"
+        self.flavor = "+1 Card\n+1 Action\nEach player (including you) reveals\n\
+the top card of his deck and either\ndiscards it or puts it back, your choice."

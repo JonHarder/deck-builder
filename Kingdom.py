@@ -13,9 +13,9 @@ class Kingdom():
                   "moat":Moat(), "chancellor":Chancellor(),
                   "village":Village(), "woodcutter":Woodcutter(),
                   "workshop":Workshop(),
-                  # "bereaucrat":Bereaucrat(), "feast":Feast(), "gardens":Gardens(),
-                  # "militia":Militia(), "moneylender":Moneylender(),
-                  # "remodel":Remodel(), "smithy":Smithy(), "spy":Spy(),
+                  "bureaucrat":Bureaucrat(), "feast":Feast(), "gardens":Gardens(),
+                  "militia":Militia(), "moneylender":Moneylender(),
+                  "remodel":Remodel(), "smithy":Smithy(), # "spy":Spy(),
                   # "thief":Thief(), "throneroom":Throneroom(),
                   # "councilroom":Councilroom(), "festival":Festival(),
                   # "laboratory":Laboratory(), "library":Library(),
@@ -97,8 +97,32 @@ class Kingdom():
         player.coins -= card_cost
         return True
 
+    def gain(self, player, max_cost):
+        """prompts player for a card, if available and costs <=
+        max_cost.  the card is taken from the kingdom and added to
+        the player's discard"""
+        answer = raw_input("Gain a card costing up to {0}: ".format(max_cost))
+        try:
+            stack = self.kingdom[answer]
+            if stack: # theres at least 1 card left
+                if stack[0].cost <= max_cost:
+                    print "Gained a {0}.".format(stack[0])
+                    card = self.kingdom[answer].pop()
+                    player.discard.append(card)
+                else:
+                    print "That card is too expensive."
+                    self.gain_card(player, max_cost)
+            else:
+                print "There are no cards left of that type."
+                self.gain_card(player, max_cost)
+        except KeyError:
+            print "There aren't any cards with that name in the kingdom"
+            self.gain_card(player, max_cost)
+
+
+
     # gain : Player -> Card -> Bool
-    def gain(self, player, card):
+    def gain_card(self, player, card):
         """gives the player the specific card from the kingdom,
         this is different from buying in that the player does not need
         buys or coins to aquire this card, nor will the players buys nor

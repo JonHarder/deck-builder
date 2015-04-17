@@ -15,6 +15,7 @@ def play_card(card_id, players, kingdom, phase):
     # actions (>= 1) to play it
     if card.name in Kingdom.victoryList:
         print "You can't play a victory card."
+        raw_input("Press Enter to continue.")
         return False
     if phase == "action" and card.name in Kingdom.actionList:
         if p.actions == 0:
@@ -71,7 +72,6 @@ def turn(table, kingdom, players, phase="action"):
             else:
                 print "Purchased a {0}".format(selection[1])
             print "------------"
-            raw_input("Hit enter to continue")
         turn(table, kingdom, players, phase)
     elif selection[0] == "play":
         try:
@@ -106,7 +106,10 @@ def y_or_n(prompt):
 
 def player_score(player):
     cards = player.hand + player.discard + player.draw
-    return sum(map(lambda card: card.victory_points, cards))
+    num_cards = len(cards)
+    num_gardens = sum([1 if card.name == "gardens" else 0 for card in cards])
+    garden_points = round(num_cards/10,0)*num_gardens
+    return garden_points + sum(map(lambda card: card.victory_points, cards))
 
 # winner : [Player] -> Player
 def winner(players):
